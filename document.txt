@@ -1,0 +1,34 @@
+1. Why this RBAC strategy was chosen (guards, middleware, decorators, etc.)
+
+project uses a Role → Permission → Authorization pattern (the README and file structure show role and permission models). Authentication is JWT based. 
+GitHub
+
+2. Why this RBAC strategy is chosen
+
+Role-Based Access Control (RBAC) is ideal when:
+- Users have distinct roles (admin, manager, user)
+- Permissions need to group actions (e.g., CREATE_TASK, ASSIGN_TASK)
+- Role assignments change over time
+- Access rules should be centralized
+
+3. Key conceptual pieces (and why):
+
+- Middleware / Guards
+- Enforce permissions before reaching controller logic
+- Decouple authorization from business logic
+- Central point to reject unauthorized access
+(common in Express/Node backend RBAC)
+
+4. Soft-delete strategy & its impact on queries
+- Not currently implemented in your repository
+
+ # Why soft delete?
+- Allows recovery
+- Keeps historical data
+- Good audit trail
+
+5. Why cursor pagination is often preferred
+
+# Problems with offset pagination
+- If records are inserted/removed while paginating:
+results can shift.Large offsets slow down queries
