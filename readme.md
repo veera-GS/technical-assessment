@@ -170,3 +170,129 @@ RBAC Model Used
 }
 
 ---
+### Api n-pints For Testing
+# singup 
+  -http://localhost:3000/api/v1/auth/signup - post method
+    
+  - payload - {
+    "data": {
+        "email": "admin@gmail.com",
+        "fullname": "test",
+        "password": "123456"
+    }
+}
+
+# singin
+  -http://localhost:3000/api/v1/auth/signin - post method
+
+  - payload - {
+    "data": {
+        "email": "admin@gmail.com",
+        "password": "123456"
+    }
+}
+
+# User SignIn 
+- http://localhost:3000/api/v1/auth/u/signin  - post method.
+
+- payload - {
+    "data": {
+        "email": "testuser@gmail.com",
+        "password": "123456",
+        "accountid":"7728151249"
+    }
+}
+
+# access token 
+ - http://localhost:3000/api/v1/auth/accesstoken - post method
+ - payload - {
+    "data": {
+        "securitycode": "8407c6d4-962c-4e2c-b757-d2fe6cca5e92"
+    }
+}
+# refresh 
+  - http://localhost:3000/api/v1/auth/refresh - post method
+
+# User or Menager create 
+ - http://localhost:3000/api/v1/user/create - post method , bearer token
+
+ - payload - {
+    "data": {
+        "email": "testuser@gmail.com",
+        "password": "123456",
+        "fullname": "testuser",
+        "userid": "testuser"
+    }
+}
+
+# User List 
+ - http://localhost:3000/api/v1/user/list?offset=0&pagesize=5 - get method,bearer token
+
+# Permission Create 
+ - http://localhost:3000/api/v1/permission/create  - post method , bearer token
+
+ - payload - {
+    "data": {
+        "permissionname": "users",
+        "permissions": [
+            "UserCreae",
+            "UserList"
+        ]
+    }
+}
+
+#  Permission List
+- http://localhost:3000/api/v1/permission/list  - get method , bearer token
+
+# Assign Permission 
+ - http://localhost:3000/api/v1/user/assignpermissions - post method , bearer token
+
+ - payload - {
+    "data": {
+        "permission": "users",
+        "userid": "testuser"
+    }
+}
+
+# Task Create 
+ - http://localhost:3000/api/v1/task/create - post method , bearer token
+
+ - payload - {
+    "data": {
+        "title": "commit error",
+        "description": "******",
+        "status": "**",
+        "priority": true
+    }
+}
+
+# Task List 
+ - http://localhost:3000/api/v1/task/list?offset=0&pagesize=5 - get method ,bearer token
+
+# Task Assign 
+ - http://localhost:3000/api/v1/task/assign - post method ,bearer token
+
+ - payload - {
+    "data":{
+    "id":"_id",
+    "userid:"testuser"
+    }
+ }
+
+# Project Create
+ - http://localhost:3000/api/v1/project/create - post method ,bearer token
+
+ - payload - {
+    "data": {
+        "organization": "*****",
+        "projectname": "*****",
+        "signInSuccessUrl": "http/**.com",
+        "signUpSuccessUrl": "http/**success.com",
+        "signInErrorUrl": "http/**success.com",
+        "signUpErrorUrl": "http/**success.com"
+    }
+}
+
+
+ # Project List
+ - http://localhost:3000/api/v1/project/list - get method ,bearer token
