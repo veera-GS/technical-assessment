@@ -1,7 +1,7 @@
 import { Db, MongoClient } from "mongodb";
 let db: Db;
 const uri =
-  "mongodb+srv://rajR:raj123456@cluster0.snol8dy.mongodb.net/?appName=Cluster0";
+  "mongodb+srv://rajR:raj123456@cluster0.snol8dy.mongodb.net/?appName=Cluster0";  // temp mail used to created the mongodb atles account 
 export const connectDb = async () => {
   const client = new MongoClient(uri
 );
