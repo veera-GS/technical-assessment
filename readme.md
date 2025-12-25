@@ -1,298 +1,303 @@
-# Technical Assessment – Backend Application
-📌 Project Overview
+# Task Management Backend API
 
-This project is a role-based backend application built as part of a technical assessment.
-It demonstrates clean architecture, JWT-based authentication, Role-Based Access Control (RBAC), pagination, and API documentation using Swagger.
+## Project Overview
 
-# The system supports:
+This project is a **Task Management Backend API** built using **Node.js, TypeScript, Express, and MongoDB**.
+The system is designed for a **single organization** and focuses on **authentication, authorization, and clean backend design**.
 
-- User authentication & authorization
-- Role and permission management
-- Project and task management
-- Secure access using RBAC
-- Scalable API design
+The main objective of this assignment is to demonstrate:
 
-# Architecture Decisions & Trade-offs
-- Architecture Style
-- The application follows a Layered Architecture:
-- Controller → Service → Repository → Database
+* Secure JWT-based authentication
+* Role-Based Access Control (RBAC)
+* Clean and scalable architecture
+* Proper API structure and documentation
 
-### Key Layers
+Partial implementation is intentional, as correctness and clarity are prioritized over feature quantity.
 
-# Controller Layer
-
-- Handles HTTP requests and responses
-- Performs request validation
-
-# Service Layer
-
-- Contains business logic
-- Decouples controllers from data access
-
-# Repository / Model Layer
-
-- Handles database operations using MongoDB models
-- Middleware Layer
-- Authentication (JWT)
-- Authorization (RBAC)
-- Error handling
-
-### Why This Architecture?
-
-# Pros
-
-- Separation of concerns
-- Easy to maintain and test
-- Scales well as features grow
-- Clear responsibility per layer
-
-# Trade-offs
-- Slightly more boilerplate code
-- More files compared to monolithic approach
-- Initial setup takes longer, but pays off long-term
-
-# Database Schema Explanation (MongoDB)
-
-MongoDB is used due to its schema flexibility, horizontal scalability, and JSON-like document structure, which fits RBAC and task management well.
 ---
 
-# Admin Schema - login collection name
+## Tech Stack
+
+* **Node.js**
+* **TypeScript**
+* **Express.js**
+* **MongoDB**
+* **JWT (Access & Refresh Tokens)**
+* **bcrypt**
+* **Git**
+
+---
+
+## Architecture Decisions & Trade-offs
+
+### Architecture Pattern
+
+The application follows a **layered architecture** to ensure clean separation of concerns:
+
+```
+### Why This Approach?
+
+* Keeps code modular and maintainable
+* Improves readability and testability
+* Makes future enhancements easier
+
+### Trade-offs
+
+* Slightly more boilerplate compared to monolithic design
+* Better scalability and long-term maintainability
+
+---
+
+## Authentication & Authorization
+
+### JWT Strategy
+
+The system uses **JWT-based authentication** with:
+
+* **Access Token** – Short-lived token used to access protected APIs
+* **Refresh Token** – Used to generate new access tokens without re-login
+
+### Token Flow
+
+1. User signs in
+2. Access token and refresh token are issued
+3. Access token is sent via `Authorization: Bearer <token>`
+4. Refresh token endpoint generates a new access token when expired
+
+---
+
+##  RBAC Strategy Explanation
+
+### Supported Roles
+
+* **ADMIN**
+
+  * Full access
+  * Can manage users, permissions, tasks, and projects
+
+* **MANAGER**
+
+  * Can manage tasks and projects
+  * Cannot manage users
+
+* **USER**
+
+  * Can view and update tasks assigned to them
+
+### RBAC Implementation
+
+RBAC is implemented using:
+
+* JWT payload role validation
+* Authorization middleware
+* Permission-based access checks
+
+### Why This Strategy?
+
+* Centralized authorization logic
+* Easy to extend
+* Clean separation from business logic
+
+---
+
+## 🗄️ Database Schema Explanation (MongoDB)
+
+### Users Collection
+
+```json
 {
-  _id: ObjectId,
-  name: string,
-  email: string,
-  password: string,
-  createdAt: Date,
-  updatedAt: Date,
-  accountid:string
+  "email": "string",
+  "password": "hashed string",
+  "fullname": "string",
+  "userid": "string",
+  "createdAt": "date"
 }
+```
+### UserPermissions Collection
 
-# User Schema - loginUsers collection name
+```json
 {
-  _id: ObjectId,
-  name: string,
-  email: string,
-  password: string,
-  createdAt: Date,
-  updatedAt: Date,
-  accountid:string
+  "permissionname":"string"
+  "userid": "string",
+  "createdAt": "date"
 }
+```
 
+### Permissions Collection
 
-# Purpose
-
-- Stores user credentials
-- Supports multiple roles per user
-
-
----
-# Permission Schema - Permissions collection name
+```json
 {
-  _id: ObjectId,
-  permissionname: string,          // e.g., CREATE_TASK, VIEW_USER
-  permissions: Array<string>
+  "permissionname": "users",
+  "permissions": ["UserCreate", "UserList"]
 }
+```
 
+### Tasks Collection
 
-# Purpose
-
-- Fine-grained access control
-
-- Reusable across roles
----
-
-# Project Schema
+```json
 {
-  _id: ObjectId,
-  name: string,
-  description: string,
-  createdBy: ObjectId,
-  signinSuccessUrl : string,
-  signinErrorUrl:string,
-  signUpSuccessUrl:string,
-  signUpErrorUrl:string
-
+  "title": "string",
+  "description": "string",
+  "status": "TODO | IN_PROGRESS | DONE",
+  "priority": true,
+  "assignedTo": "userid",
+  "createdAt": "date"
 }
----
-# Task Schema
+```
+
+### Projects Collection
+
+```json
 {
-  _id: ObjectId,
-  title: string,
-  description: string,
-  projectId: ObjectId,
-  assignedTo: ObjectId,
-  status: string
+  "organization": "string",
+  "projectname": "string",
+  "signInSuccessUrl": "string",
+  "signUpSuccessUrl": "string",
+  "signInErrorUrl":"string",
+  "signUpErrorUrl":"string"
+  "createdAt": "date"
 }
----
-###  RBAC (Role-Based Access Control) Strategy
-RBAC Model Used
-
-- User → Roles → Permissions
-
-- How It Works
-
-- User logs in
-
-- JWT token is issued containing user ID
-
-- Middleware extracts user roles
-
-- Roles are mapped to permissions
-
-- API access is granted or denied based on permissions
-
+```
 
 ---
 
-### Pagination Strategy Explanation
-# Why Pagination?
+## 📄 Pagination Strategy Explanation
 
-- Prevents large payloads
-- Improves performance
-- Reduces memory usage
-- Strategy Used
-- Limit & Offset Pagination
+### Implemented Pagination
 
-# API Query Parameters
-- ?page=1&limit=10
+The API uses **offset-based pagination**:
 
-# Example Logic
-- skip = (page - 1) * limit
-- limit = limit
+```
+GET /list?offset=0&pagesize=5
+```
 
-# Response Format
-{
-  "data": [...],
-  "page": 1,
-  "limit": 10,
-  "totalRecords": 100,
-  "totalPages": 10
-}
+### Why Offset Pagination?
+
+* Easy to implement and understand
+* Suitable for small to medium datasets
+* Works well for current application needs
+
+### Trade-off
+
+* Not optimal for very large datasets
+* Cursor-based pagination can be added later
 
 ---
-### Api n-pints For Testing
-# singup 
-  -http://localhost:3000/api/v1/auth/signup - post method
-    
-  - payload - {
-    "data": {
-        "email": "admin@gmail.com",
-        "fullname": "test",
-        "password": "123456"
-    }
-}
 
-# singin
-  -http://localhost:3000/api/v1/auth/signin - post method
+## API Endpoints for Testing
 
-  - payload - {
-    "data": {
-        "email": "admin@gmail.com",
-        "password": "123456"
-    }
-}
+### Authentication APIs
 
-# User SignIn 
-- http://localhost:3000/api/v1/auth/u/signin  - post method.
+**Admin Signup**
 
-- payload - {
-    "data": {
-        "email": "testuser@gmail.com",
-        "password": "123456",
-        "accountid":"7728151249"
-    }
-}
+```
+POST /api/v1/auth/signup
+```
 
-# access token 
- - http://localhost:3000/api/v1/auth/accesstoken - post method
- - payload - {
-    "data": {
-        "securitycode": "8407c6d4-962c-4e2c-b757-d2fe6cca5e92"
-    }
-}
-# refresh 
-  - http://localhost:3000/api/v1/auth/refresh - post method
+**Admin Signin**
 
-# User or Menager create 
- - http://localhost:3000/api/v1/user/create - post method , bearer token
+```
+POST /api/v1/auth/signin
+```
 
- - payload - {
-    "data": {
-        "email": "testuser@gmail.com",
-        "password": "123456",
-        "fullname": "testuser",
-        "userid": "testuser"
-    }
-}
+**User Signin**
 
-# User List 
- - http://localhost:3000/api/v1/user/list?offset=0&pagesize=5 - get method,bearer token
+```
+POST /api/v1/auth/u/signin
+```
 
-# Permission Create 
- - http://localhost:3000/api/v1/permission/create  - post method , bearer token
+**Generate Access Token**
 
- - payload - {
-    "data": {
-        "permissionname": "users",
-        "permissions": [
-            "UserCreae",
-            "UserList"
-        ]
-    }
-}
+```
+POST /api/v1/auth/accesstoken
+```
 
-#  Permission List
-- http://localhost:3000/api/v1/permission/list  - get method , bearer token
+**Refresh Token**
 
-# Assign Permission 
- - http://localhost:3000/api/v1/user/assignpermissions - post method , bearer token
+```
+POST /api/v1/auth/refresh
+```
 
- - payload - {
-    "data": {
-        "permission": "users",
-        "userid": "testuser"
-    }
-}
+---
 
-# Task Create 
- - http://localhost:3000/api/v1/task/create - post method , bearer token
+### User & Permission Management
 
- - payload - {
-    "data": {
-        "title": "commit error",
-        "description": "******",
-        "status": "**",
-        "priority": true
-    }
-}
+**Create User / Manager**
 
-# Task List 
- - http://localhost:3000/api/v1/task/list?offset=0&pagesize=5 - get method ,bearer token
+```
+POST /api/v1/user/create
+```
 
-# Task Assign 
- - http://localhost:3000/api/v1/task/assign - post method ,bearer token
+**User List**
 
- - payload - {
-    "data":{
-    "id":"_id",
-    "userid:"testuser"
-    }
- }
+```
+GET /api/v1/user/list?offset=0&pagesize=5
+```
 
-# Project Create
- - http://localhost:3000/api/v1/project/create - post method ,bearer token
+**Create Permission**
 
- - payload - {
-    "data": {
-        "organization": "*****",
-        "projectname": "*****",
-        "signInSuccessUrl": "http/**.com",
-        "signUpSuccessUrl": "http/**success.com",
-        "signInErrorUrl": "http/**success.com",
-        "signUpErrorUrl": "http/**success.com"
-    }
-}
+```
+POST /api/v1/permission/create
+```
 
+**Assign Permission**
 
- # Project List
- - http://localhost:3000/api/v1/project/list - get method ,bearer token
+```
+POST /api/v1/user/assignpermissions
+```
+
+---
+
+### Task Management
+
+**Create Task**
+
+```
+POST /api/v1/task/create
+```
+
+**Task List**
+
+```
+GET /api/v1/task/list?offset=0&pagesize=5
+```
+
+**Assign Task**
+
+```
+POST /api/v1/task/assign
+```
+
+---
+
+### Project Management
+
+**Create Project**
+
+```
+POST /api/v1/project/create
+```
+
+---
+
+## How to Run the Project
+
+```bash
+git clone https://github.com/veera-GS/technical-assessment.git
+cd technical-assessment
+npm install
+npm run dev
+```
+
+---
+
+## Final Notes
+
+This project demonstrates:
+
+* Secure backend API design
+* JWT authentication with RBAC
+* Clean architecture and modular code
+* Practical MongoDB schema design
+
+Partial completion aligns with assessment guidelines, focusing on clarity and correctness.
