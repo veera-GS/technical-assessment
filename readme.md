@@ -34,7 +34,6 @@ Partial implementation is intentional, as correctness and clarity are prioritize
 
 The application follows a **layered architecture** to ensure clean separation of concerns:
 
-```
 ### Why This Approach?
 
 * Keeps code modular and maintainable
@@ -117,7 +116,7 @@ RBAC is implemented using:
 
 ```json
 {
-  "permissionname":"string"
+  "permissionname":"string[]"
   "userid": "string",
   "createdAt": "date"
 }
