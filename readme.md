@@ -298,5 +298,6 @@ This project demonstrates:
 * JWT authentication with RBAC
 * Clean architecture and modular code
 * Practical MongoDB schema design
-
+* I am not use dotenv , i directly used mongo url its created with temp mail,its not a problem but its worst case.
+  
 Partial completion aligns with assessment guidelines, focusing on clarity and correctness.
